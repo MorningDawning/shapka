@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ШАПКА-НЕВИДИМКА</title>
+    <title>ШАПКА-НЕВИДИМКА 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -408,7 +408,20 @@
             function (error) {
                 console.error('Error loading model:', error);
                 // Запасной вариант - куб, если модель не загрузилась
-            
+                const geometry = new THREE.BoxGeometry(3, 3, 3); // Увеличили размер куба
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0x9d50bb,
+                    emissive: 0x6e48aa,
+                    emissiveIntensity: 0.8, // Увеличили интенсивность свечения
+                    specular: 0xffffff,
+                    shininess: 50,
+                    wireframe: false
+                });
+                model = new THREE.Mesh(geometry, material);
+                model.castShadow = true;
+                model.receiveShadow = true;
+                modelScene.add(model);
+            }
         );
 
         // Начальная позиция камеры (будет переопределена после загрузки модели)
