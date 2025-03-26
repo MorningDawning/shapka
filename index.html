@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ШАПКА-НЕВИДИМКА 2.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: #000;
+            font-family: 'Inter', sans-serif;
+            color: #e6e6fa;
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            color: #e6e6fa;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 15, 45, 0.7);
+            border: 1px solid rgba(157, 80, 187, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            background: rgba(157, 80, 187, 0.3);
+            border-color: #9d50bb;
+            box-shadow: 0 0 20px rgba(157, 80, 187, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .content-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 100px 10%;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .text-content {
+            width: 45%;
+            z-index: 10;
+        }
+
+        .model-container {
+            width: 45%;
+            height: 60vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 62px;
+            text-transform: uppercase;
+            margin: 0 0 30px 0;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 5px rgba(157, 80, 187, 0.3));
+            white-space: nowrap;
+        }
+
+        .main-title:hover {
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.7)) 
+                    drop-shadow(0 0 30px rgba(157, 80, 187, 0.5));
+            transform: scale(1.02);
+        }
+
+        .title-line {
+    display: inline-block; /* Делаем блоком для управления переносами */
+    background: linear-gradient(90deg, #9D50BB, #00D4FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding: 0.2rem 0;
+    white-space: normal; /* Разрешаем только ручные переносы */
+    line-height: 1.3; /* Уменьшаем межстрочный интервал */
+}
+
+        .subtitle {
+            font-weight: 500;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #e6e6fa;
+            margin-bottom: 40px;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .main-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, #9d50bb, #6e48aa);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(157, 80, 187, 0.6);
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(157, 80, 187, 0.8);
+        }
+
+        .info-btn {
+            background: transparent;
+            color: #e6e6fa;
+            border: 2px solid #9d50bb;
+            box-shadow: 0 0 10px rgba(157, 80, 187, 0.3);
+        }
+
+        .info-btn:hover {
+            background: rgba(157, 80, 187, 0.1);
+            box-shadow: 0 0 20px rgba(157, 80, 187, 0.5);
+        }
+
+        /* Основные стили лого */
+.logo-container {
+    position: fixed; /* или absolute, в зависимости от структуры */
+    top: 25px;
+    left: 145px;
+    z-index: 1000; /* Чтобы было поверх других элементов */
+}
+
+.logo {
+    display: block;
+    height: 40px; /* Регулируйте по необходимости */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logo svg path {
+    transition: fill 0.3s ease;
+}
+
+.logo:hover svg path {
+    fill: #9D50BB; /* Изменение цвета при наведении */
+}
+
+        @media (max-width: 768px) {
+            .content-container {
+                flex-direction: column;
+                padding: 80px 5%;
+            }
+            
+            .text-content, .model-container {
+                width: 100%;
+            }
+            
+            .model-container {
+                height: 50vh;
+                margin-top: 40px;
+            }
+            
+            .main-title {
+                font-size: 32px;
+                line-height: 38px;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    
+    <nav>
+        <a href="#" class="nav-btn">
+            <i class="fas fa-info-circle"></i>
+            <span>О продукте</span>
+        </a>
+        <a href="#" class="nav-btn">
+            <i class="fas fa-truck"></i>
+            <span>Доставка</span>
+        </a>
+        <a href="#" class="nav-btn">
+            <i class="fas fa-star"></i>
+            <span>Отзывы</span>
+        </a>
+    </nav>
+    
+    <div class="logo-container">
+        <img src="images/logo.svg" alt="Шапка-невидимка" class="logo">
+    </div>
+
+    <div class="content-container">
+        <div class="text-content">
+            <h1 class="main-title">
+                <span class="title-line">Исчезнуть проще,<br>чем кажется.</span>
+            </h1>
+            
+            <div class="subtitle">
+                <p>Хотите исчезнуть — жмите «Купить». <br>
+                Хотите объяснения — читайте <nobr>«Подробнее»<br></nobr> (спойлер: никак, это магия).</p>
+                
+                <p>Цена: как 3 чашки кофе в Москве. Эффект: вечная невидимость. Выгода: очевидна.</p>
+            </div>
+            
+            <div class="buttons-container">
+                <a href="#" class="main-btn buy-btn">
+                    <i class="fas fa-magic"></i> КУПИТЬ СЕЙЧАС
+                </a>
+                <a href="#" class="main-btn info-btn">
+                    <i class="fas fa-scroll"></i> ПОДРОБНЕЕ
+                </a>
+            </div>
+        </div>
+        
+        <div class="model-container" id="model-container"></div>
+    </div>
+
+    <script>
+        // Звездное поле
+        const starfieldRenderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('starfield'),
+            antialias: true,
+            alpha: false
+        });
+        starfieldRenderer.setClearColor(0x05020b);
+        starfieldRenderer.setSize(window.innerWidth, window.innerHeight);
+
+        const starfieldScene = new THREE.Scene();
+        const starfieldCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        starfieldCamera.position.z = 50;
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const vertices = [];
+        
+        for (let i = 0; i < 10000; i++) {
+            vertices.push(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xFFFFFF,
+            size: 1.5,
+            sizeAttenuation: false,
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        starfieldScene.add(stars);
+
+        function animateStarfield() {
+            requestAnimationFrame(animateStarfield);
+            
+            stars.rotation.x += 0.0001;
+            stars.rotation.y += 0.0002;
+            
+            starfieldRenderer.render(starfieldScene, starfieldCamera);
+        }
+
+        // 3D модель
+        const container = document.getElementById('model-container');
+        const modelScene = new THREE.Scene();
+        const modelCamera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        
+        const modelRenderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance" // Добавлено для лучшей производительности
+        });
+        modelRenderer.setSize(container.clientWidth, container.clientHeight);
+        modelRenderer.setClearColor(0x000000, 0);
+        modelRenderer.shadowMap.enabled = true; // Включаем тени
+        container.appendChild(modelRenderer.domElement);
+
+        // Улучшенное освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Увеличена интенсивность
+        modelScene.add(ambientLight);
+        
+        // Основной направленный свет (более яркий)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(2, 2, 5);
+        directionalLight.castShadow = true; // Включаем тени
+        directionalLight.shadow.mapSize.width = 2048; // Качество теней
+        directionalLight.shadow.mapSize.height = 2048;
+        modelScene.add(directionalLight);
+        
+        // Добавляем заполняющий свет с другой стороны
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        fillLight.position.set(-2, 1, -3);
+        modelScene.add(fillLight);
+        
+        // Добавляем задний свет для контура
+        const backLight = new THREE.DirectionalLight(0x9d50bb, 0.8);
+        backLight.position.set(0, 0, -5);
+        modelScene.add(backLight);
+        
+        // Добавляем точечный свет для акцентов
+        const pointLight = new THREE.PointLight(0x00d4ff, 1, 10);
+        pointLight.position.set(1, 2, 3);
+        modelScene.add(pointLight);
+
+        // Левитация модели
+        let model;
+        let clock = new THREE.Clock();
+        let mixer;
+
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            './models/your_model.glb',
+            function (gltf) {
+                model = gltf.scene;
+                
+                // Увеличиваем модель в 3 раза (измените это значение по необходимости)
+                model.scale.set(3, 3, 3); // Было 1.5, стало 3
+                
+                // Центрируем модель
+                model.position.y = -1; // Было -1, стало 0
+                
+                // Включаем тени для всех элементов модели
+                model.traverse(function(node) {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                        
+                        // Улучшаем материалы (если нужно)
+                        if (node.material) {
+                            node.material.metalness = 0.1;
+                            node.material.roughness = 0.5;
+                            node.material.envMapIntensity = 0.5;
+                        }
+                    }
+                });
+                
+                modelScene.add(model);
+                
+                // Анимация (если есть в модели)
+                if (gltf.animations && gltf.animations.length) {
+                    mixer = new THREE.AnimationMixer(model);
+                    mixer.clipAction(gltf.animations[0]).play();
+                }
+                
+                // Автоматическое позиционирование камеры
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = modelCamera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2));
+                
+                // Увеличиваем расстояние камеры, чтобы модель не обрезалась
+                cameraZ *= 3;
+                modelCamera.position.z = cameraZ;
+                modelCamera.lookAt(center);
+            },
+            undefined,
+            function (error) {
+                console.error('Error loading model:', error);
+                // Запасной вариант - куб, если модель не загрузилась
+                const geometry = new THREE.BoxGeometry(3, 3, 3); // Увеличили размер куба
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0x9d50bb,
+                    emissive: 0x6e48aa,
+                    emissiveIntensity: 0.8, // Увеличили интенсивность свечения
+                    specular: 0xffffff,
+                    shininess: 50,
+                    wireframe: false
+                });
+                model = new THREE.Mesh(geometry, material);
+                model.castShadow = true;
+                model.receiveShadow = true;
+                modelScene.add(model);
+            }
+        );
+
+        // Начальная позиция камеры (будет переопределена после загрузки модели)
+        modelCamera.position.z = 10;
+
+        function animateModel() {
+            requestAnimationFrame(animateModel);
+            
+            // Левитация (плавное движение вверх-вниз)
+            if (model) {
+                model.position.y = Math.sin(clock.getElapsedTime() * 0.5) * 0.3; // Увеличили амплитуду
+                model.rotation.y = clock.getElapsedTime() * 0.3;
+                
+                // Добавим легкое покачивание
+                model.rotation.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.1;
+                model.rotation.z = Math.cos(clock.getElapsedTime() * 0.3) * 0.05;
+            }
+            
+            if (mixer) mixer.update(clock.getDelta());
+            
+            modelRenderer.render(modelScene, modelCamera);
+        }
+
+        // Обработка изменения размера
+        function onWindowResize() {
+            // Starfield
+            starfieldCamera.aspect = window.innerWidth / window.innerHeight;
+            starfieldCamera.updateProjectionMatrix();
+            starfieldRenderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Model
+            modelCamera.aspect = container.clientWidth / container.clientHeight;
+            modelCamera.updateProjectionMatrix();
+            modelRenderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        animateStarfield();
+        animateModel();
+    </script>
+</body>
+</html>
